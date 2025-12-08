@@ -33,9 +33,17 @@ Ikuti langkah-langkah ini untuk mendapatkan salinan proyek ke komputer lokal And
 
 Buka Terminal atau Command Prompt, dan jalankan perintah kloning **(Ganti URL di bawah ini dengan URL Repositori GitHub Anda yang sebenarnya!)**:
 
-```bash
-git clone https://github.com/izza1224/Flutter-siadita.git
-cd aplikasi_siadita
-    
-### B. Memasang Dependensi
+    ```bash
+    git clone https://github.com/izza1224/Flutter-siadita.git
+    cd aplikasi_siadita
+
+### B. Memasang Dependensi 
+
+Setelah berhasil masuk ke folder proyek, Anda perlu mengunduh semua package pihak ketiga yang digunakan dalam proyek (seperti card_swiper)
+
+    flutter pub get
+
+### C. Jalankan Aplikasi
+
+    flutter run
 
