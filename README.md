@@ -34,5 +34,5 @@ Ikuti langkah-langkah ini untuk mendapatkan salinan proyek ke komputer lokal And
 Buka Terminal atau Command Prompt, dan jalankan perintah kloning **(Ganti URL di bawah ini dengan URL Repositori GitHub Anda yang sebenarnya!)**:
 
 ```bash
-git clone [https://github.com/ldclabs/anda](https://github.com/ldclabs/anda)
+git clone https://github.com/izza1224/Flutter-siadita.git
 cd aplikasi_siadita
