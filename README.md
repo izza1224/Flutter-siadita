@@ -36,3 +36,6 @@ Buka Terminal atau Command Prompt, dan jalankan perintah kloning **(Ganti URL di
 ```bash
 git clone https://github.com/izza1224/Flutter-siadita.git
 cd aplikasi_siadita
+    
+### B. Memasang Dependensi
+
