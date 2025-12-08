@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 // --- Konstanta Warna ---
-// Definisikan warna marun yang mirip dengan desain Anda
+// Warna marun yang sesuai dengan desain
 const Color kPrimaryColor = Color(0xFF8B0000); 
+// Warna latar belakang ikon menu yang lebih terang
+const Color kLightPrimaryColor = Color(0xFFFBE4E4); 
 
 // --- Data Dummy ---
-// Data untuk menu ikon
 final List<Map<String, dynamic>> menuItems = [
   {'icon': Icons.group, 'label': 'Profile'},
   {'icon': Icons.airplane_ticket_outlined, 'label': 'Tiket'},
@@ -16,20 +17,20 @@ final List<Map<String, dynamic>> menuItems = [
   {'icon': Icons.calendar_month, 'label': 'Agenda'},
 ];
 
-// Data untuk berita terbaru
 final List<Map<String, String>> newsItems = [
-  {'title': 'Dokumentasi Karya Budaya Jaran Slining Lumajang'},
-  {'title': 'Dokumentasi Karya Budaya Jaran Lamongan'},
-  {'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Ramayanti'},
-  {'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Kang Bagong'},
+  {'title': 'Dokumentasi Karya Budaya Jaran Slining Lumajang', 'time': '15 Hari yang lalu'},
+  {'title': 'Dokumentasi Karya Budaya Jaran Lamongan', 'time': '15 Hari yang lalu'},
+  {'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Ramayanti', 'time': '11 Hari yang lalu'}, // Penyesuaian waktu
+  {'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Kang Bagong', 'time': '15 Hari yang lalu'},
 ];
 
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Scaffold tidak perlu Appbar karena Header sudah mencakup status bar
     return Scaffold(
-      backgroundColor: Colors.grey[100], 
+      backgroundColor: Colors.white, // Latar belakang utama putih
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -49,43 +50,45 @@ class HomeScreen extends StatelessWidget {
   // --- WIDGET 1: HEADER (Selamat Datang SiAdita) ---
   Widget _buildHeader(BuildContext context) {
     return Container(
-      // Padding menyesuaikan dengan Status Bar
+      // Padding vertikal 40+10 di atas dan 20 di bawah (Total 70)
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 10, 
         left: 20, 
-        right: 10, 
+        right: 20, 
         bottom: 20
       ),
       decoration: const BoxDecoration(
         color: kPrimaryColor, 
+        // Radius lengkungan sangat besar
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
+          bottomLeft: Radius.circular(50),
+          bottomRight: Radius.circular(50),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          // Kiri: Ikon Profil & Teks
           Row(
             children: <Widget>[
               const CircleAvatar(
+                radius: 18, // Ukuran ikon profil
                 backgroundColor: Colors.white,
-                child: Icon(Icons.person, color: kPrimaryColor),
+                child: Icon(Icons.person, color: kPrimaryColor, size: 24),
               ),
               const SizedBox(width: 10),
               const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Selamat datang', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                  Text('Selamat datang', style: TextStyle(color: Colors.white70, fontSize: 13)),
                   Text('SiAdita', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                 ],
               ),
             ],
           ),
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white, size: 28),
-            onPressed: () {},
-          ),
+          
+          // Kanan: Ikon Notifikasi
+          const Icon(Icons.notifications, color: Colors.white, size: 28),
         ],
       ),
     );
@@ -93,34 +96,40 @@ class HomeScreen extends StatelessWidget {
 
   // --- WIDGET 2: MENU IKON (GRID) ---
   Widget _buildIconMenu() {
-    return GridView.builder(
-      shrinkWrap: true, 
-      physics: const NeverScrollableScrollPhysics(), 
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-      itemCount: menuItems.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4, 
-        mainAxisSpacing: 15,
-        crossAxisSpacing: 10,
-        childAspectRatio: 0.8, 
-      ),
-      itemBuilder: (context, index) {
-        final item = menuItems[index];
-        return Column(
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFFBE4E4), 
-                borderRadius: BorderRadius.circular(15),
+    return Padding(
+      // Padding luar sesuai dengan desain
+      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+      child: GridView.builder(
+        shrinkWrap: true, 
+        physics: const NeverScrollableScrollPhysics(), 
+        padding: const EdgeInsets.symmetric(horizontal: 40.0), // Padding horizontal lebih besar untuk menengahkan 4 kolom
+        itemCount: menuItems.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4, 
+          mainAxisSpacing: 25, // Jarak vertikal antar item lebih besar
+          crossAxisSpacing: 0, // Tidak ada jarak horizontal (sudah diatur oleh padding luar)
+          childAspectRatio: 0.7, // Rasio lebar/tinggi item
+        ),
+        itemBuilder: (context, index) {
+          final item = menuItems[index];
+          return Column(
+            children: <Widget>[
+              // Container Ikon
+              Container(
+                decoration: BoxDecoration(
+                  color: kPrimaryColor, // Latar belakang ikon warna marun gelap
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Icon(item['icon'], size: 30, color: Colors.white), // Ikon putih
               ),
-              padding: const EdgeInsets.all(12),
-              child: Icon(item['icon'], size: 30, color: kPrimaryColor),
-            ),
-            const SizedBox(height: 5),
-            Text(item['label'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
-          ],
-        );
-      },
+              const SizedBox(height: 5),
+              // Label Teks
+              Text(item['label'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 11)),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -131,16 +140,19 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header Cuplikan Video
           const Row(
             children: [
-              Icon(Icons.movie, color: kPrimaryColor),
+              Icon(Icons.movie, color: Colors.black54, size: 20), // Ikon hitam/abu
               SizedBox(width: 5),
-              Text("Cuplikan Video", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text("Cuplikan Video", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ],
           ),
           const SizedBox(height: 10),
+          // Card Video
           Card(
             clipBehavior: Clip.antiAlias,
+            elevation: 2, // Bayangan card
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,23 +163,25 @@ class HomeScreen extends StatelessWidget {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Placeholder Gambar (Harus diganti dengan Image.asset)
+                      // Placeholder Gambar (Perlu diganti dengan Image.asset)
                       Container(color: Colors.black), 
-                      const Icon(Icons.play_circle_fill, color: Colors.white, size: 60),
-                      // Text dummy di atas gambar video
+                      const Icon(Icons.play_circle_fill, color: Colors.white70, size: 70), // Tombol play lebih besar
+                      
+                      // Data teks overlay di atas video
                       Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          color: Colors.black54,
-                          child: const Text('Live Streaming Youtube Cak Durasim', style: TextStyle(color: Colors.white, fontSize: 10)),
-                        ),
+                        bottom: 8,
+                        left: 8,
+                        child: Text('Live Streaming Youtube Cak Durasim', style: TextStyle(color: Colors.white, fontSize: 10)),
                       ),
+                      // Area wajah dan teks BALEN (tidak bisa 100% tanpa aset gambar asli)
+                      Positioned(
+                        top: 10,
+                        child: Text("BALEN", style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 5.0, color: Colors.black)])),
+                      )
                     ],
                   ),
                 ),
-                // Deskripsi Video
+                // Deskripsi Video (Di luar gambar)
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
@@ -178,12 +192,12 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           const Text(
                             "BALEN", 
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kPrimaryColor),
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                           ),
                           Text("Live Youtube Cak Durasim", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
                         ],
                       ),
-                      const Text("26 September 2025", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text("26 September 2025", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
                     ],
                   ),
                 ),
@@ -195,21 +209,20 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // --- WIDGET 4: BERITA TERBARU (HEADER) ---
+  // --- WIDGET 4 & 5: BERITA TERBARU ---
   Widget _buildNewsHeader() {
     return const Padding(
       padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
       child: Row(
         children: [
-          Icon(Icons.article, color: kPrimaryColor),
+          Icon(Icons.article, color: Colors.black54, size: 20),
           SizedBox(width: 5),
-          Text("Berita Terbaru", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text("Berita Terbaru", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         ],
       ),
     );
   }
 
-  // --- WIDGET 5: BERITA TERBARU (LIST) ---
   Widget _buildNewsSection() {
     return ListView.builder(
       shrinkWrap: true,
@@ -219,23 +232,26 @@ class HomeScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = newsItems[index];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 10.0),
+          padding: const EdgeInsets.only(bottom: 15.0), // Jarak antar item
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: kPrimaryColor, // Latar belakang merah marun
               borderRadius: BorderRadius.circular(15),
+              boxShadow: const [ // Tambah shadow tipis agar mirip card
+                BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+              ],
             ),
             child: Row(
               children: [
-                // Placeholder Gambar Berita
+                // Placeholder Gambar Berita (dengan radius sudut)
                 Container(
-                  width: 60,
-                  height: 60,
+                  width: 65,
+                  height: 65,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
-                    // Placeholder untuk gambar (ganti dengan Image.asset jika ada aset)
+                    // Placeholder untuk gambar
                   ),
                   child: const Center(child: Icon(Icons.image, color: Colors.grey)),
                 ),
@@ -250,19 +266,26 @@ class HomeScreen extends StatelessWidget {
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 13,
                         ),
                       ),
                     ],
                   ),
                 ),
-                // Teks waktu (15 hari yang lalu)
-                const Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text("15 Hari yang lalu", style: TextStyle(color: Color(0xFFFBE4E4), fontSize: 10)),
-                  ],
+                // Teks waktu
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        item['time']!, 
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(color: Color(0xFFFBE4E4), fontSize: 10),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
