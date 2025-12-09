@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
+import 'home_screen.dart'; // Import HomeScreen Anda
 
 void main() {
   runApp(MyApp());
@@ -10,16 +10,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SiAdita App',
-      debugShowCheckedModeBanner: false, 
+      // Menggunakan theme data untuk menetapkan warna background Merah Gelap
       theme: ThemeData(
-        primaryColor: const Color(0xFF8B0000), 
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.red,
-        ).copyWith(
-          secondary: Colors.redAccent,
-        ),
+        scaffoldBackgroundColor: const Color(0xFF5E0821), // Background Merah Gelap
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5E0821)),
+        useMaterial3: true,
       ),
-      home: HomeScreen(), 
+      home: HomeScreen(),
     );
   }
 }

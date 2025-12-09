@@ -1,207 +1,227 @@
 import 'package:flutter/material.dart';
+import 'package:card_swiper/card_swiper.dart'; 
+import 'package:reorderable_grid_view/reorderable_grid_view.dart'; 
 
-// --- Konstanta Warna ---
-// Warna marun yang sesuai dengan desain
-const Color kPrimaryColor = Color(0xFF8B0000); 
-// Warna latar belakang ikon menu yang lebih terang
+// --- KONSTANTA WARNA ---
+// Merah Gelap: #5E0821
+const Color kPrimaryColor = Color(0xFF5E0821); 
+// Putih: #FFFFFF
+const Color kCardColor = Color(0xFFFFFFFF);    
+// Merah Muda Pucat 
 const Color kLightPrimaryColor = Color(0xFFFBE4E4); 
 
-// --- Data Dummy ---
-final List<Map<String, dynamic>> menuItems = [
-  {'icon': Icons.group, 'label': 'Profile'},
-  {'icon': Icons.airplane_ticket_outlined, 'label': 'Tiket'},
-  {'icon': Icons.web, 'label': 'Web'},
-  {'icon': Icons.account_balance, 'label': 'Info Sewa'},
-  {'icon': Icons.calendar_today, 'label': 'Jadwal'},
-  {'icon': Icons.person_pin_circle_outlined, 'label': 'Seniman'},
-  {'icon': Icons.calendar_month, 'label': 'Agenda'},
+// --- DATA DUMMY VIDEO ---
+final List<Map<String, String>> videoItems = [
+  {'title': 'BALEN', 'subtitle': 'Live Youtube Cak Durasim', 'date': '26 September 2025', 'desc': 'Live Streaming Youtube Cak Durasim', 'image': 'assets/images/image_balen.png'}, 
+  {'title': 'Dageline "Mata Keranjang"', 'subtitle': 'Gedung Cak Durasim', 'date': '22 Oktober 2025', 'desc': 'Live Streaming Youtube', 'image': 'assets/images/image_matakeranjang.png'}, 
+  {'title': 'ASHOLAH JHARAN', 'subtitle': 'Dageline "Mata Keranjang"', 'date': '22 Oktober 2025', 'desc': 'Pagelaran Budaya', 'image': 'assets/images/image_asholah.png'}, 
 ];
 
+// --- DATA DUMMY BERITA (DITAMBAH IMAGE) ---
 final List<Map<String, String>> newsItems = [
-  {'title': 'Dokumentasi Karya Budaya Jaran Slining Lumajang', 'time': '15 Hari yang lalu'},
-  {'title': 'Dokumentasi Karya Budaya Jaran Lamongan', 'time': '15 Hari yang lalu'},
-  {'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Ramayanti', 'time': '11 Hari yang lalu'}, // Penyesuaian waktu
-  {'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Kang Bagong', 'time': '15 Hari yang lalu'},
+  // Berita Lumajang DENGAN GAMBAR (image_lumajang.png)
+  {'title': 'Dokumentasi Karya Budaya Jaran Slining Lumajang', 'time': '15 Hari yang lalu', 'image': 'assets/images/image_lumajang.png'},
+  // Berita lainnya (gunakan placeholder jika belum ada gambar)
+  {'title': 'Dokumentasi Karya Budaya Jaran Lamongan', 'time': '15 Hari yang lalu', 'image': 'assets/images/image_lamongan.png'},
+  {'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Ramayanti', 'time': '15 Hari yang lalu', 'image': 'assets/images/image_ludruk.png'}, 
+  {'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Kang Bagong', 'time': '15 Hari yang lalu', 'image': 'assets/images/image_kang.png'},
 ];
 
 
-class HomeScreen extends StatelessWidget {
+// --- KELAS UTAMA (STATEFUL UNTUK REORDER) ---
+class HomeScreen extends StatefulWidget {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  
+  // Data MENU IKON
+  List<Map<String, dynamic>> menuItems = [
+    {'icon': Icons.group, 'label': 'Profile'},
+    {'icon': Icons.airplane_ticket_outlined, 'label': 'Tiket'},
+    {'icon': Icons.web, 'label': 'Web'},
+    {'icon': Icons.account_balance, 'label': 'Info Sewa'},
+    {'icon': Icons.calendar_today, 'label': 'Jadwal'},
+    {'icon': Icons.person_pin_circle_outlined, 'label': 'Seniman'},
+    {'icon': Icons.calendar_month, 'label': 'Agenda'},
+  ];
+
+  // Fungsi yang dijalankan ketika item di-drag dan dilepas
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final item = menuItems.removeAt(oldIndex);
+      menuItems.insert(newIndex, item);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Scaffold tidak perlu Appbar karena Header sudah mencakup status bar
     return Scaffold(
-      backgroundColor: Colors.white, // Latar belakang utama putih
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            _buildHeader(context),
-            _buildIconMenu(),
-            _buildVideoSection(),
-            _buildNewsHeader(),
-            _buildNewsSection(),
-            const SizedBox(height: 20),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              // 1. HEADER (Bagian Merah Gelap)
+              _buildHeader(context), 
+              
+              // 2. KOTAK PUTIH (Konten Utama)
+              Container(
+                decoration: BoxDecoration(
+                  color: kCardColor, // Putih
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                // Padding atas 50.0 untuk menggeser Baris 1 Ikon ke bawah
+                padding: const EdgeInsets.only(top: 50.0), 
+                child: Column(
+                  children: [
+                    _buildReorderableIconMenu(), // Menu Ikon (reorderable)
+                    _buildVideoSlider(), 
+                    _buildNewsHeader(),
+                    _buildNewsSection(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // --- WIDGET 1: HEADER (Selamat Datang SiAdita) ---
+  // --- WIDGET 1: HEADER (TATA LETAK AKURAT) ---
   Widget _buildHeader(BuildContext context) {
     return Container(
-      // Padding vertikal 40+10 di atas dan 20 di bawah (Total 70)
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 10, 
+        top: MediaQuery.of(context).padding.top + 30, 
         left: 20, 
         right: 20, 
-        bottom: 20
+        bottom: 50 
       ),
-      decoration: const BoxDecoration(
-        color: kPrimaryColor, 
-        // Radius lengkungan sangat besar
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(50),
-          bottomRight: Radius.circular(50),
-        ),
-      ),
-      child: Row(
+      child: Row( // Semua dalam satu Row utama untuk penyelarasan sejajar
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center, 
         children: <Widget>[
-          // Kiri: Ikon Profil & Teks
+          
+          // KIRI: Logo Akun dan "Selamat datang"
           Row(
-            children: <Widget>[
-              const CircleAvatar(
-                radius: 18, // Ukuran ikon profil
-                backgroundColor: Colors.white,
-                child: Icon(Icons.person, color: kPrimaryColor, size: 24),
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Padding kecil untuk geser ke bawah, agar sejajar dengan SiAdita
+              Padding( 
+                padding: const EdgeInsets.only(top: 5.0), 
+                child: const CircleAvatar(
+                  radius: 18, 
+                  backgroundColor: kCardColor, 
+                  child: Icon(Icons.person, color: kPrimaryColor, size: 24), 
+                ),
               ),
               const SizedBox(width: 10),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Selamat datang', style: TextStyle(color: Colors.white70, fontSize: 13)),
-                  Text('SiAdita', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                ],
+              Padding(
+                 padding: const EdgeInsets.only(top: 5.0), 
+                child: const Text('Selamat datang', style: TextStyle(color: kCardColor, fontSize: 16)), 
               ),
             ],
           ),
           
-          // Kanan: Ikon Notifikasi
-          const Icon(Icons.notifications, color: Colors.white, size: 28),
+          const Spacer(),
+          
+          // KANAN: SiAdita dan Lonceng
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text('SiAdita', style: TextStyle(color: kCardColor, fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 12), 
+              Icon(Icons.notifications, color: kCardColor, size: 28), 
+            ],
+          ),
         ],
       ),
     );
   }
 
-  // --- WIDGET 2: MENU IKON (GRID) ---
-  Widget _buildIconMenu() {
+  // --- WIDGET 2: MENU IKON (REORDERABLE & RAPAT) ---
+  Widget _buildReorderableIconMenu() {
     return Padding(
-      // Padding luar sesuai dengan desain
-      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-      child: GridView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: ReorderableGridView.builder(
         shrinkWrap: true, 
         physics: const NeverScrollableScrollPhysics(), 
-        padding: const EdgeInsets.symmetric(horizontal: 40.0), // Padding horizontal lebih besar untuk menengahkan 4 kolom
+        padding: const EdgeInsets.symmetric(horizontal: 40.0), 
         itemCount: menuItems.length,
+        
+        onReorder: _onReorder, 
+        
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4, 
-          mainAxisSpacing: 25, // Jarak vertikal antar item lebih besar
-          crossAxisSpacing: 0, // Tidak ada jarak horizontal (sudah diatur oleh padding luar)
-          childAspectRatio: 0.7, // Rasio lebar/tinggi item
+          mainAxisSpacing: 10, // Jarak vertikal yang rapat
+          crossAxisSpacing: 5, 
+          childAspectRatio: 0.7, 
         ),
+        
         itemBuilder: (context, index) {
           final item = menuItems[index];
+          
           return Column(
+            key: ValueKey(item['label']), // Key unik untuk reorder
             children: <Widget>[
-              // Container Ikon
+              // Container Ikon 
               Container(
+                height: 55, 
+                width: 55, 
                 decoration: BoxDecoration(
-                  color: kPrimaryColor, // Latar belakang ikon warna marun gelap
-                  borderRadius: BorderRadius.circular(15),
+                  color: kPrimaryColor, // Merah Gelap
+                  borderRadius: BorderRadius.circular(15), 
                 ),
                 padding: const EdgeInsets.all(12),
-                child: Icon(item['icon'], size: 30, color: Colors.white), // Ikon putih
+                child: Icon(item['icon'], size: 30, color: kCardColor), // Putih
               ),
               const SizedBox(height: 5),
-              // Label Teks
-              Text(item['label'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 11)),
+              Text(item['label'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Colors.black)),
             ],
           );
         },
       ),
     );
   }
-
-  // --- WIDGET 3: CUPLIKAN VIDEO ---
-  Widget _buildVideoSection() {
+  
+  // --- WIDGET 3: CUPLIKAN VIDEO SLIDER ---
+  Widget _buildVideoSlider() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      padding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0), 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Cuplikan Video
           const Row(
             children: [
-              Icon(Icons.movie, color: Colors.black54, size: 20), // Ikon hitam/abu
+              Icon(Icons.movie, color: Colors.black54, size: 20), 
               SizedBox(width: 5),
-              Text("Cuplikan Video", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              Text("Cuplikan Video", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
             ],
           ),
           const SizedBox(height: 10),
-          // Card Video
-          Card(
-            clipBehavior: Clip.antiAlias,
-            elevation: 2, // Bayangan card
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Area Gambar Video dengan Tombol Play
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Placeholder Gambar (Perlu diganti dengan Image.asset)
-                      Container(color: Colors.black), 
-                      const Icon(Icons.play_circle_fill, color: Colors.white70, size: 70), // Tombol play lebih besar
-                      
-                      // Data teks overlay di atas video
-                      Positioned(
-                        bottom: 8,
-                        left: 8,
-                        child: Text('Live Streaming Youtube Cak Durasim', style: TextStyle(color: Colors.white, fontSize: 10)),
-                      ),
-                      // Area wajah dan teks BALEN (tidak bisa 100% tanpa aset gambar asli)
-                      Positioned(
-                        top: 10,
-                        child: Text("BALEN", style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 5.0, color: Colors.black)])),
-                      )
-                    ],
-                  ),
-                ),
-                // Deskripsi Video (Di luar gambar)
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "BALEN", 
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-                          ),
-                          Text("Live Youtube Cak Durasim", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                        ],
-                      ),
-                      Text("26 September 2025", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                    ],
-                  ),
-                ),
-              ],
+
+          SizedBox(
+            height: 300, 
+            child: Swiper(
+              itemCount: videoItems.length,
+              layout: SwiperLayout.DEFAULT,
+              itemBuilder: (context, index) {
+                final item = videoItems[index];
+                return _buildVideoCard(item); 
+              },
+              autoplay: true, 
+              autoplayDelay: 4000, 
+              viewportFraction: 0.9, 
+              scale: 0.95, 
             ),
           ),
         ],
@@ -209,20 +229,112 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // --- WIDGET 4 & 5: BERITA TERBARU ---
+  // WIDGET CARD UNTUK SLIDER (MEMUAT GAMBAR DARI ASSET)
+  Widget _buildVideoCard(Map<String, String> item) {
+    return Container(
+      margin: const EdgeInsets.only(right: 15.0), 
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        elevation: 2, 
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), 
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 3,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  
+                  // --- Memuat Gambar dari Aset ---
+                  Image.asset(
+                    item['image']!, 
+                    fit: BoxFit.cover, 
+                    width: double.infinity, 
+                    height: double.infinity,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(color: Colors.black, child: const Center(child: Icon(Icons.error, color: kCardColor)));
+                    },
+                  ),
+                  
+                  // Ikon Play Overlay
+                  const Icon(Icons.play_circle_fill, color: Colors.white70, size: 50), 
+                  
+                  // Teks Live Streaming (Desc) di overlay (diposisikan di kiri bawah)
+                  Positioned(
+                    bottom: 10, 
+                    left: 10,
+                    right: 10,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            item['desc']!, 
+                            style: const TextStyle(color: Colors.white, fontSize: 12),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Deskripsi Teks di Bawah Gambar (Subtitle dan Tanggal Sejajar)
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      item['title']!, 
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                    const SizedBox(height: 2),
+
+                    // Subtitle ("Live Youtube Cak Durasim") dan Tanggal Sejajar
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          item['subtitle']!, // "Live Youtube Cak Durasim" (Teks kiri)
+                          style: const TextStyle(fontSize: 12, color: Colors.grey)
+                        ),
+                        Text(
+                          item['date']!, // "26 September 2025" (Teks kanan, sejajar)
+                          style: const TextStyle(fontSize: 12, color: Colors.grey)
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // --- WIDGET 4: BERITA TERBARU (HEADER) ---
   Widget _buildNewsHeader() {
     return const Padding(
-      padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+      padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 10.0),
       child: Row(
         children: [
           Icon(Icons.article, color: Colors.black54, size: 20),
           SizedBox(width: 5),
-          Text("Berita Terbaru", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          Text("Berita Terbaru", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
         ],
       ),
     );
   }
 
+  // --- WIDGET 5: BERITA TERBARU (LIST) ---
   Widget _buildNewsSection() {
     return ListView.builder(
       shrinkWrap: true,
@@ -232,28 +344,33 @@ class HomeScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = newsItems[index];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 15.0), // Jarak antar item
+          padding: const EdgeInsets.only(bottom: 15.0), 
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: kPrimaryColor, // Latar belakang merah marun
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: const [ // Tambah shadow tipis agar mirip card
+              color: kPrimaryColor, // Merah Gelap
+              borderRadius: BorderRadius.circular(15), 
+              boxShadow: const [ 
                 BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
               ],
             ),
             child: Row(
               children: [
-                // Placeholder Gambar Berita (dengan radius sudut)
+                // Gambar Berita dari Aset
                 Container(
                   width: 65,
                   height: 65,
+                  clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
-                    color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
-                    // Placeholder untuk gambar
                   ),
-                  child: const Center(child: Icon(Icons.image, color: Colors.grey)),
+                  child: Image.asset(
+                    item['image']!, // Memuat gambar berita dari aset
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(color: kCardColor, child: const Center(child: Icon(Icons.image, color: Colors.grey)));
+                    },
+                  ),
                 ),
                 const SizedBox(width: 15),
                 // Teks Berita
@@ -264,7 +381,7 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         item['title']!,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: kCardColor, // Putih
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
@@ -282,7 +399,7 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         item['time']!, 
                         textAlign: TextAlign.right,
-                        style: const TextStyle(color: Color(0xFFFBE4E4), fontSize: 10),
+                        style: const TextStyle(color: kLightPrimaryColor, fontSize: 10),
                       ),
                     ],
                   ),
