@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; // Import HomeScreen Anda
+import 'login_screen.dart'; // Import halaman Login yang akan dimuat pertama
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SiAdita App',
-      // Menggunakan theme data untuk menetapkan warna background Merah Gelap
+      title: 'Aplikasi SiAdita',
+      // Menghilangkan banner DEBUG di pojok kanan atas
+      debugShowCheckedModeBanner: false, 
+      
+      // Mengatur tema dasar aplikasi, menggunakan warna dasar Merah Gelap (5E0821)
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFF5E0821), // Background Merah Gelap
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5E0821)),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+      
+      // Mengatur LoginScreen sebagai halaman awal yang akan dimuat
+      home: const LoginScreen(), 
     );
   }
 }

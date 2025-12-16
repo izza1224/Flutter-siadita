@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart'; 
 import 'package:reorderable_grid_view/reorderable_grid_view.dart'; 
 
+// --- TAMBAHAN BARU: Import SenimanScreen untuk Navigasi ---
+import 'seniman_screen.dart'; 
+
 // --- KONSTANTA WARNA ---
 // Merah Gelap: #5E0821
 const Color kPrimaryColor = Color(0xFF5E0821); 
@@ -9,6 +12,7 @@ const Color kPrimaryColor = Color(0xFF5E0821);
 const Color kCardColor = Color(0xFFFFFFFF);    
 // Merah Muda Pucat 
 const Color kLightPrimaryColor = Color(0xFFFBE4E4); 
+const Color kBlackColor = Color(0xFF000000); 
 
 // --- DATA DUMMY VIDEO ---
 final List<Map<String, String>> videoItems = [
@@ -30,12 +34,37 @@ final List<Map<String, String>> newsItems = [
 
 // --- KELAS UTAMA (STATEFUL UNTUK REORDER) ---
 class HomeScreen extends StatefulWidget {
+  // Konstruktor NON-CONST
+  HomeScreen({super.key}); 
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   
+  // --- TAMBAHAN: FUNGSI CUSTOM TRANSITION ---
+  Route _createRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        // Slide dari kanan ke kiri
+        const begin = Offset(1.0, 0.0); 
+        const end = Offset.zero; 
+        const curve = Curves.ease; 
+        
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 400), 
+    );
+  }
+  // ------------------------------------------------
+
   // Data MENU IKON
   List<Map<String, dynamic>> menuItems = [
     {'icon': Icons.group, 'label': 'Profile'},
@@ -47,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.calendar_month, 'label': 'Agenda'},
   ];
 
-  // Fungsi yang dijalankan ketika item di-drag dan dilepas
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
       if (oldIndex < newIndex) {
@@ -61,6 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Atur background Scaffold sebagai default Merah Gelap (jika ada area kosong)
+      backgroundColor: kPrimaryColor, 
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -100,6 +130,9 @@ class _HomeScreenState extends State<HomeScreen> {
   // --- WIDGET 1: HEADER (TATA LETAK AKURAT) ---
   Widget _buildHeader(BuildContext context) {
     return Container(
+      // --- WARNA DI SINI DIPERLUKAN UNTUK JIKA TIDAK TER-SCROLL ---
+      color: kPrimaryColor, 
+      // --------------------------------
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 30, 
         left: 20, 
@@ -115,7 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Padding kecil untuk geser ke bawah, agar sejajar dengan SiAdita
               Padding( 
                 padding: const EdgeInsets.only(top: 5.0), 
                 child: const CircleAvatar(
@@ -148,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- WIDGET 2: MENU IKON (REORDERABLE & RAPAT) ---
+  // --- WIDGET 2: MENU IKON (REORDERABLE & DAPAT DIKLIK) ---
   Widget _buildReorderableIconMenu() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -170,23 +202,37 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: (context, index) {
           final item = menuItems[index];
           
-          return Column(
+          // --- InkWell untuk interaksi klik ---
+          return InkWell(
             key: ValueKey(item['label']), // Key unik untuk reorder
-            children: <Widget>[
-              // Container Ikon 
-              Container(
-                height: 55, 
-                width: 55, 
-                decoration: BoxDecoration(
-                  color: kPrimaryColor, // Merah Gelap
-                  borderRadius: BorderRadius.circular(15), 
+            onTap: () {
+              // LOGIKA NAVIGASI DENGAN ANIMASI
+              if (item['label'] == 'Seniman') {
+                Navigator.of(context).push(_createRoute(const SenimanScreen()));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Menu ${item['label']} diklik')),
+                );
+              }
+            },
+            // --- Konten Kolom Ikon ---
+            child: Column(
+              children: <Widget>[
+                // Container Ikon 
+                Container(
+                  height: 55, 
+                  width: 55, 
+                  decoration: BoxDecoration(
+                    color: kPrimaryColor, // Merah Gelap
+                    borderRadius: BorderRadius.circular(15), 
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(item['icon'], size: 30, color: kCardColor), // Putih
                 ),
-                padding: const EdgeInsets.all(12),
-                child: Icon(item['icon'], size: 30, color: kCardColor), // Putih
-              ),
-              const SizedBox(height: 5),
-              Text(item['label'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Colors.black)),
-            ],
+                const SizedBox(height: 5),
+                Text(item['label'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: kBlackColor)),
+              ],
+            ),
           );
         },
       ),
@@ -204,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Icon(Icons.movie, color: Colors.black54, size: 20), 
               SizedBox(width: 5),
-              Text("Cuplikan Video", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
+              Text("Cuplikan Video", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kBlackColor)),
             ],
           ),
           const SizedBox(height: 10),
@@ -253,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: double.infinity, 
                     height: double.infinity,
                     errorBuilder: (context, error, stackTrace) {
-                      return Container(color: Colors.black, child: const Center(child: Icon(Icons.error, color: kCardColor)));
+                      return Container(color: kBlackColor, child: const Center(child: Icon(Icons.error, color: kCardColor)));
                     },
                   ),
                   
@@ -271,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Flexible(
                           child: Text(
                             item['desc']!, 
-                            style: const TextStyle(color: Colors.white, fontSize: 12),
+                            style: const TextStyle(color: kCardColor, fontSize: 12),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -293,7 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       item['title']!, 
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: kBlackColor)),
                     const SizedBox(height: 2),
 
                     // Subtitle ("Live Youtube Cak Durasim") dan Tanggal Sejajar
@@ -328,7 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Icon(Icons.article, color: Colors.black54, size: 20),
           SizedBox(width: 5),
-          Text("Berita Terbaru", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
+          Text("Berita Terbaru", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kBlackColor)),
         ],
       ),
     );
