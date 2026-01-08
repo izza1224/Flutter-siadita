@@ -5,6 +5,7 @@ import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 // --- TAMBAHAN BARU: Import SenimanScreen untuk Navigasi ---
 import 'seniman_screen.dart';
 import 'sewa_gedung.dart';
+import 'agenda_screen.dart';
 
 // --- KONSTANTA WARNA ---
 // Merah Gelap: #5E0821
@@ -69,7 +70,7 @@ final List<Map<String, String>> newsItems = [
 // --- KELAS UTAMA (STATEFUL UNTUK REORDER) ---
 class HomeScreen extends StatefulWidget {
   // Konstruktor NON-CONST
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -257,6 +258,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   break;
                 case 'Info Sewa':
                   Navigator.of(context).push(_createRoute(InfoSewaPage()));
+                  break;
+                case 'Agenda':
+                  Navigator.of(context).push(_createRoute(const AgendaScreen()));
                   break;
                 // Anda bisa tambah case lain di sini
                 default:
