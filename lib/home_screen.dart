@@ -48,22 +48,26 @@ final List<Map<String, String>> newsItems = [
     'title': 'Dokumentasi Karya Budaya Jaran Slining Lumajang',
     'time': '15 Hari yang lalu',
     'image': 'assets/images/image_lumajang.png',
+    'imageDetail': 'assets/images/image_lumajang_hd.png',
   },
   // Berita lainnya (gunakan placeholder jika belum ada gambar)
   {
     'title': 'Dokumentasi Karya Budaya Jaran Lamongan',
     'time': '15 Hari yang lalu',
     'image': 'assets/images/image_lamongan.png',
+    'imageDetail': 'assets/images/image_lamongan_hd.jpg',
   },
   {
     'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Ramayanti',
     'time': '15 Hari yang lalu',
     'image': 'assets/images/image_ludruk.png',
+    'imageDetail': 'assets/images/image_ludruk_hd.jpg',
   },
   {
     'title': 'Dokumentasi Karya Budaya Pagelaran Ludruk Kang Bagong',
     'time': '15 Hari yang lalu',
     'image': 'assets/images/image_kang.png',
+    'imageDetail': 'assets/images/image_kang_hd.jpg',
   },
 ];
 
@@ -583,7 +587,7 @@ class DetailBeritaPage extends StatelessWidget {
             ),
             flexibleSpace: FlexibleSpaceBar(
               background: Image.asset(
-                data['image']!,
+                data['imageDetail'] ?? data['image']!,
                 fit: BoxFit.cover,
                 filterQuality: FilterQuality.high,
               ),
