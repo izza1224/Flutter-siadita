@@ -260,7 +260,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.of(context).push(_createRoute(InfoSewaPage()));
                   break;
                 case 'Agenda':
-                  Navigator.of(context).push(_createRoute(const AgendaScreen()));
+                  Navigator.of(
+                    context,
+                  ).push(_createRoute(const AgendaScreen()));
                   break;
                 // Anda bisa tambah case lain di sini
                 default:
@@ -366,6 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Image.asset(
                     item['image']!,
                     fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
                     width: double.infinity,
                     height: double.infinity,
                     errorBuilder: (context, error, stackTrace) {
@@ -488,7 +491,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- WIDGET 5: BERITA TERBARU (LIST) ---
+  // Masukkan fungsi ini ke dalam class _HomeScreenState
   Widget _buildNewsSection() {
     return ListView.builder(
       shrinkWrap: true,
@@ -497,84 +500,156 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       itemBuilder: (context, index) {
         final item = newsItems[index];
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 15.0),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: kPrimaryColor, // Merah Gelap
+          child: Material(
+            // Tambahkan Material agar efek tap terlihat
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                // Gunakan satu halaman detail untuk semua berita (Lebih Efisien)
+                Navigator.of(
+                  context,
+                ).push(_createRoute(DetailBeritaPage(data: item)));
+              },
               borderRadius: BorderRadius.circular(15),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
+              child: Ink(
+                // Gunakan Ink untuk dekorasi agar tidak menutupi ripple
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: kPrimaryColor,
+                  borderRadius: BorderRadius.circular(15),
                 ),
-              ],
-            ),
-            child: Row(
-              children: [
-                // Gambar Berita dari Aset
-                Container(
-                  width: 65,
-                  height: 65,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Image.asset(
-                    item['image']!, // Memuat gambar berita dari aset
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: kCardColor,
-                        child: const Center(
-                          child: Icon(Icons.image, color: Colors.grey),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 15),
-                // Teks Berita
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        item['image']!,
+                        width: 65,
+                        height: 65,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Text(
                         item['title']!,
                         style: const TextStyle(
-                          color: kCardColor, // Putih
+                          color: kCardColor,
                           fontWeight: FontWeight.w600,
-                          fontSize: 13,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                // Teks waktu
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        item['time']!,
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(
-                          color: kLightPrimaryColor,
-                          fontSize: 10,
-                        ),
+                    ),
+                    Text(
+                      item['time']!,
+                      style: const TextStyle(
+                        color: kLightPrimaryColor,
+                        fontSize: 10,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+// --- HALAMAN DETAIL BERITA (DALAM SATU FILE) ---
+class DetailBeritaPage extends StatelessWidget {
+  final Map<String, String> data;
+
+  const DetailBeritaPage({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: CustomScrollView(
+        slivers: [
+          // AppBar yang menampilkan gambar berita
+          SliverAppBar(
+            expandedHeight: 250,
+            pinned: true,
+            backgroundColor: kPrimaryColor,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Image.asset(
+                data['image']!,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Label Kategori (Opsional)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: kLightPrimaryColor,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: const Text(
+                      "BUDAYA",
+                      style: TextStyle(
+                        color: kPrimaryColor,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  // Judul
+                  Text(
+                    data['title']!,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Waktu
+                  Text(
+                    data['time']!,
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  ),
+                  const Divider(height: 40),
+                  // Isi Berita Dummy
+                  Text(
+                    "Ini adalah detail isi berita mengenai ${data['title']}. "
+                    "Pagelaran ini merupakan bentuk upaya pelestarian kebudayaan Jawa Timur yang diselenggarakan di Gedung Cak Durasim.\n\n"
+                    "Diharapkan dengan adanya publikasi ini, masyarakat luas dapat lebih mengenal kekayaan tradisi lokal dan turut serta dalam menjaga keberlangsungannya bagi generasi mendatang.",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.6,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 50),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
