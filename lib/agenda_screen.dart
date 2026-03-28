@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// --- TAMBAHAN IMPORT DETAIL ---
+import 'detail_agenda_screen.dart'; 
 
 // --- KONSTANTA WARNA ---
 const Color kPrimaryColor = Color(0xFF5E0821);
@@ -218,19 +220,33 @@ class _AgendaScreenState extends State<AgendaScreen> {
       ),
       itemBuilder: (context, index) {
         final item = filteredData[index];
-        return Column(
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.asset(item.imagePath, fit: BoxFit.cover, 
-                  errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey[200], child: const Icon(Icons.image, color: Colors.grey))),
+        // --- TAMBAHAN NAVIGASI KE DETAIL ---
+        return InkWell(
+          onTap: () {
+            // Berpindah ke detail hanya jika item adalah Kepaten Obor
+            if (item.title.contains("Kepaten Obor")) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DetailAgendaScreen(),
+                ),
+              );
+            }
+          },
+          child: Column(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.asset(item.imagePath, fit: BoxFit.cover, 
+                    errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey[200], child: const Icon(Icons.image, color: Colors.grey))),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(item.category, style: const TextStyle(fontSize: 14)),
-            Text(item.title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-          ],
+              const SizedBox(height: 8),
+              Text(item.category, style: const TextStyle(fontSize: 14)),
+              Text(item.title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            ],
+          ),
         );
       },
     );

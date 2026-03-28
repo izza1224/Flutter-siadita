@@ -6,6 +6,7 @@ import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'seniman_screen.dart';
 import 'sewa_gedung.dart';
 import 'agenda_screen.dart';
+import 'profile_screen.dart'; // Import halaman profil
 
 // --- KONSTANTA WARNA ---
 const Color kPrimaryColor = Color(0xFF5E0821);
@@ -236,6 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 // --- TAMBAHAN BARU: Navigasi Tiket ---
                 case 'Tiket':
                   Navigator.of(context).push(_createRoute(const TiketScreen()));
+                  break;
+                case 'Profile':
+                  Navigator.of(context).push(_createRoute(const ProfileScreen()));
                   break;
                 // ------------------------------------
                 default:
