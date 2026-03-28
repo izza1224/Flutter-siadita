@@ -8,11 +8,8 @@ import 'sewa_gedung.dart';
 import 'agenda_screen.dart';
 
 // --- KONSTANTA WARNA ---
-// Merah Gelap: #5E0821
 const Color kPrimaryColor = Color(0xFF5E0821);
-// Putih: #FFFFFF
 const Color kCardColor = Color(0xFFFFFFFF);
-// Merah Muda Pucat
 const Color kLightPrimaryColor = Color(0xFFFBE4E4);
 const Color kBlackColor = Color(0xFF000000);
 
@@ -41,16 +38,13 @@ final List<Map<String, String>> videoItems = [
   },
 ];
 
-// --- DATA DUMMY BERITA (DITAMBAH IMAGE) ---
 final List<Map<String, String>> newsItems = [
-  // Berita Lumajang DENGAN GAMBAR (image_lumajang.png)
   {
     'title': 'Dokumentasi Karya Budaya Jaran Slining Lumajang',
     'time': '15 Hari yang lalu',
     'image': 'assets/images/image_lumajang.png',
     'imageDetail': 'assets/images/image_lumajang_hd.png',
   },
-  // Berita lainnya (gunakan placeholder jika belum ada gambar)
   {
     'title': 'Dokumentasi Karya Budaya Jaran Lamongan',
     'time': '15 Hari yang lalu',
@@ -71,9 +65,7 @@ final List<Map<String, String>> newsItems = [
   },
 ];
 
-// --- KELAS UTAMA (STATEFUL UNTUK REORDER) ---
 class HomeScreen extends StatefulWidget {
-  // Konstruktor NON-CONST
   const HomeScreen({super.key});
 
   @override
@@ -81,12 +73,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // --- TAMBAHAN: FUNGSI CUSTOM TRANSITION ---
   Route _createRoute(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        // Slide dari kanan ke kiri
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
         const curve = Curves.ease;
@@ -101,9 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
       transitionDuration: const Duration(milliseconds: 400),
     );
   }
-  // ------------------------------------------------
 
-  // Data MENU IKON
   List<Map<String, dynamic>> menuItems = [
     {'icon': Icons.group, 'label': 'Profile'},
     {'icon': Icons.airplane_ticket_outlined, 'label': 'Tiket'},
@@ -127,30 +115,25 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Atur background Scaffold sebagai default Merah Gelap (jika ada area kosong)
       backgroundColor: kPrimaryColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              // 1. HEADER (Bagian Merah Gelap)
               _buildHeader(context),
-
-              // 2. KOTAK PUTIH (Konten Utama)
               Container(
                 decoration: BoxDecoration(
-                  color: kCardColor, // Putih
+                  color: kCardColor,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
                   ),
                 ),
-                // Padding atas 50.0 untuk menggeser Baris 1 Ikon ke bawah
                 padding: const EdgeInsets.only(top: 50.0),
                 child: Column(
                   children: [
-                    _buildReorderableIconMenu(), // Menu Ikon (reorderable)
+                    _buildReorderableIconMenu(),
                     _buildVideoSlider(),
                     _buildNewsHeader(),
                     _buildNewsSection(),
@@ -165,12 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- WIDGET 1: HEADER (TATA LETAK AKURAT) ---
   Widget _buildHeader(BuildContext context) {
     return Container(
-      // --- WARNA DI SINI DIPERLUKAN UNTUK JIKA TIDAK TER-SCROLL ---
       color: kPrimaryColor,
-      // --------------------------------
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 30,
         left: 20,
@@ -178,11 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
         bottom: 50,
       ),
       child: Row(
-        // Semua dalam satu Row utama untuk penyelarasan sejajar
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          // KIRI: Logo Akun dan "Selamat datang"
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -204,10 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-
           const Spacer(),
-
-          // KANAN: SiAdita dan Lonceng
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -228,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- WIDGET 2: MENU IKON (REORDERABLE & DAPAT DIKLIK) ---
   Widget _buildReorderableIconMenu() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -237,38 +211,33 @@ class _HomeScreenState extends State<HomeScreen> {
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 40.0),
         itemCount: menuItems.length,
-
         onReorder: _onReorder,
-
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
-          mainAxisSpacing: 10, // Jarak vertikal yang rapat
+          mainAxisSpacing: 10,
           crossAxisSpacing: 5,
           childAspectRatio: 0.7,
         ),
-
         itemBuilder: (context, index) {
           final item = menuItems[index];
-
-          // --- InkWell untuk interaksi klik ---
           return InkWell(
-            key: ValueKey(item['label']), // Key unik untuk reorder
+            key: ValueKey(item['label']),
             onTap: () {
               switch (item['label']) {
                 case 'Seniman':
-                  Navigator.of(
-                    context,
-                  ).push(_createRoute(const SenimanScreen()));
+                  Navigator.of(context).push(_createRoute(const SenimanScreen()));
                   break;
                 case 'Info Sewa':
                   Navigator.of(context).push(_createRoute(InfoSewaPage()));
                   break;
                 case 'Agenda':
-                  Navigator.of(
-                    context,
-                  ).push(_createRoute(const AgendaScreen()));
+                  Navigator.of(context).push(_createRoute(const AgendaScreen()));
                   break;
-                // Anda bisa tambah case lain di sini
+                // --- TAMBAHAN BARU: Navigasi Tiket ---
+                case 'Tiket':
+                  Navigator.of(context).push(_createRoute(const TiketScreen()));
+                  break;
+                // ------------------------------------
                 default:
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -277,15 +246,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
               }
             },
-            // --- Konten Kolom Ikon ---
             child: Column(
               children: <Widget>[
-                // Container Ikon
                 Container(
                   height: 55,
                   width: 55,
                   decoration: BoxDecoration(
-                    color: kPrimaryColor, // Merah Gelap
+                    color: kPrimaryColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   padding: const EdgeInsets.all(12),
@@ -293,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     item['icon'],
                     size: 30,
                     color: kCardColor,
-                  ), // Putih
+                  ),
                 ),
                 const SizedBox(height: 5),
                 Text(
@@ -309,7 +276,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- WIDGET 3: CUPLIKAN VIDEO SLIDER ---
   Widget _buildVideoSlider() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
@@ -331,7 +297,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 10),
-
           SizedBox(
             height: 300,
             child: Swiper(
@@ -352,7 +317,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // WIDGET CARD UNTUK SLIDER (MEMUAT GAMBAR DARI ASSET)
   Widget _buildVideoCard(Map<String, String> item) {
     return Container(
       margin: const EdgeInsets.only(right: 15.0),
@@ -368,7 +332,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // --- Memuat Gambar dari Aset ---
                   Image.asset(
                     item['image']!,
                     fit: BoxFit.cover,
@@ -384,15 +347,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ),
-
-                  // Ikon Play Overlay
                   const Icon(
                     Icons.play_circle_fill,
                     color: Colors.white70,
                     size: 50,
                   ),
-
-                  // Teks Live Streaming (Desc) di overlay (diposisikan di kiri bawah)
                   Positioned(
                     bottom: 10,
                     left: 10,
@@ -417,7 +376,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            // Deskripsi Teks di Bawah Gambar (Subtitle dan Tanggal Sejajar)
             Expanded(
               flex: 1,
               child: Padding(
@@ -438,20 +396,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 2),
-
-                    // Subtitle ("Live Youtube Cak Durasim") dan Tanggal Sejajar
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          item['subtitle']!, // "Live Youtube Cak Durasim" (Teks kiri)
+                          item['subtitle']!,
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.grey,
                           ),
                         ),
                         Text(
-                          item['date']!, // "26 September 2025" (Teks kanan, sejajar)
+                          item['date']!,
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.grey,
@@ -469,7 +425,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- WIDGET 4: BERITA TERBARU (HEADER) ---
   Widget _buildNewsHeader() {
     return const Padding(
       padding: EdgeInsets.only(
@@ -495,7 +450,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Masukkan fungsi ini ke dalam class _HomeScreenState
   Widget _buildNewsSection() {
     return ListView.builder(
       shrinkWrap: true,
@@ -508,18 +462,15 @@ class _HomeScreenState extends State<HomeScreen> {
         return Padding(
           padding: const EdgeInsets.only(bottom: 15.0),
           child: Material(
-            // Tambahkan Material agar efek tap terlihat
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                // Gunakan satu halaman detail untuk semua berita (Lebih Efisien)
                 Navigator.of(
                   context,
                 ).push(_createRoute(DetailBeritaPage(data: item)));
               },
               borderRadius: BorderRadius.circular(15),
               child: Ink(
-                // Gunakan Ink untuk dekorasi agar tidak menutupi ripple
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: kPrimaryColor,
@@ -564,10 +515,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// --- HALAMAN DETAIL BERITA (DALAM SATU FILE) ---
+// --- HALAMAN DETAIL BERITA ---
 class DetailBeritaPage extends StatelessWidget {
   final Map<String, String> data;
-
   const DetailBeritaPage({super.key, required this.data});
 
   @override
@@ -576,7 +526,6 @@ class DetailBeritaPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // AppBar yang menampilkan gambar berita
           SliverAppBar(
             expandedHeight: 250,
             pinned: true,
@@ -593,14 +542,12 @@ class DetailBeritaPage extends StatelessWidget {
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Label Kategori (Opsional)
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
@@ -620,7 +567,6 @@ class DetailBeritaPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  // Judul
                   Text(
                     data['title']!,
                     style: const TextStyle(
@@ -630,13 +576,11 @@ class DetailBeritaPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  // Waktu
                   Text(
                     data['time']!,
                     style: const TextStyle(color: Colors.grey, fontSize: 13),
                   ),
                   const Divider(height: 40),
-                  // Isi Berita Dummy
                   Text(
                     "Ini adalah detail isi berita mengenai ${data['title']}. "
                     "Pagelaran ini merupakan bentuk upaya pelestarian kebudayaan Jawa Timur yang diselenggarakan di Gedung Cak Durasim.\n\n"
@@ -653,6 +597,164 @@ class DetailBeritaPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// =========================================================================
+// --- HALAMAN TIKET PAGELARAN (DIBUAT BERDASARKAN AGENDA) ---
+// =========================================================================
+
+class TiketScreen extends StatefulWidget {
+  const TiketScreen({super.key});
+
+  @override
+  State<TiketScreen> createState() => _TiketScreenState();
+}
+
+class _TiketScreenState extends State<TiketScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  // Data Agenda yang Anda berikan
+  final List<Map<String, String>> tiketData = [
+    {'category': 'Ludruk', 'title': '“Sucining Katresnan”', 'image': 'assets/images/agenda_sucining.png'},
+    {'category': 'Ludruk', 'title': '“Kepaten Obor”', 'image': 'assets/images/agenda_kepaten.png'},
+    {'category': 'Ludruk', 'title': '“Nada Klinting”', 'image': 'assets/images/agenda_nada.png'},
+    {'category': 'Ludruk', 'title': '“Sarap Tambak Oso”', 'image': 'assets/images/agenda_sarap.png'},
+    {'category': 'Ludruk', 'title': '“Nglaras Ikhlas Noto Lelaku”', 'image': 'assets/images/agenda_nglaras.png'},
+    {'category': 'Ludruk', 'title': '“Lemah Abang”', 'image': 'assets/images/agenda_lemah.png'},
+  ];
+
+  List<Map<String, String>> _getFilteredTiket() {
+    return tiketData.where((item) {
+      return item['title']!.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+             item['category']!.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: kPrimaryColor,
+      body: Column(
+        children: [
+          // Header Maroon
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(width: 5),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text('Tiket Pagelaran', 
+                        style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                      Text('Pemesanan tiket untuk pagelaran yang\nakan datang', 
+                        style: TextStyle(color: Colors.white70, fontSize: 13)),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+          // Body Putih
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+              ),
+              child: Column(
+                children: [
+                  // Kotak Pencarian
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: kPrimaryColor),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (val) => setState(() => _searchQuery = val),
+                        decoration: const InputDecoration(
+                          hintText: 'Search..',
+                          suffixIcon: Icon(Icons.search, color: kPrimaryColor),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20, bottom: 10),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Akan Datang', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  // Grid Tiket
+                  Expanded(
+                    child: GridView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 15,
+                        mainAxisSpacing: 20,
+                        childAspectRatio: 0.65,
+                      ),
+                      itemCount: _getFilteredTiket().length,
+                      itemBuilder: (context, index) {
+                        final item = _getFilteredTiket()[index];
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image.asset(item['image']!, fit: BoxFit.cover,
+                                  errorBuilder: (c,e,s) => Container(color: Colors.grey[200])),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(item['title']!, textAlign: TextAlign.center,
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      // Tombol Bawah
+      bottomNavigationBar: Container(
+        height: 80,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.grey.shade200)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.home, size: 35, color: Colors.grey),
+              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (c) => const HomeScreen()), (r) => false),
+            ),
+            const Icon(Icons.confirmation_number, size: 35, color: kPrimaryColor),
+          ],
+        ),
       ),
     );
   }

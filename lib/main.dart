@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart'; // Import halaman Login yang akan dimuat pertama
+import 'login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       ),
       
       // Mengatur LoginScreen sebagai halaman awal yang akan dimuat
-      home: const LoginScreen(), 
+      home: const LoginScreen(),
     );
   }
 }

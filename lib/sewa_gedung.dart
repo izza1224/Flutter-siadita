@@ -40,6 +40,8 @@ class InfoSewaPage extends StatelessWidget {
     },
   ];
 
+  InfoSewaPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
