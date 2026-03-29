@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart'; // Import HomeScreen
+import 'package:shared_preferences/shared_preferences.dart'; //import package shared preferences
 
 // --- KONSTANTA
-const Color kPrimaryColor = Color(0xFF5E0821); 
-const Color kBlackColor = Color(0xFF000000); 
-const Color kCardColor = Color(0xFFFFFFFF); 
+const Color kPrimaryColor = Color(0xFF5E0821);
+const Color kBlackColor = Color(0xFF000000);
+const Color kCardColor = Color(0xFFFFFFFF);
 
 // Konstruktor tidak menggunakan const karena ini StatefulWidget
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key}); 
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  
   TextEditingController emailController = TextEditingController();
   bool isOtpSent = false;
   TextEditingController otpController = TextEditingController();
-  
-  String simulatedOtp = ''; 
+
+  String simulatedOtp = '';
 
   // --- FUNGSI CUSTOM TRANSITION ---
   Route _createRoute(Widget page) {
@@ -28,39 +28,38 @@ class _LoginScreenState extends State<LoginScreen> {
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         // Slide dari kanan ke kiri
-        const begin = Offset(1.0, 0.0); 
-        const end = Offset.zero; 
-        const curve = Curves.ease; 
-        
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
+
+        return SlideTransition(position: animation.drive(tween), child: child);
       },
-      transitionDuration: const Duration(milliseconds: 400), 
+      transitionDuration: const Duration(milliseconds: 400),
     );
   }
   // ------------------------------------------------
 
   void _sendOtp() {
     if (emailController.text.isNotEmpty) {
-      final otp = '123456'; 
-      
+      final otp = '123456';
+
       setState(() {
         isOtpSent = true;
-        simulatedOtp = otp; 
+        simulatedOtp = otp;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Kode OTP Anda: $simulatedOtp'),
-          duration: const Duration(seconds: 10), 
+          duration: const Duration(seconds: 10),
           backgroundColor: kPrimaryColor,
         ),
       );
-      
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Masukkan alamat email yang valid.')),
@@ -68,27 +67,32 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _login() {
+  void _login() async {
     if (!isOtpSent) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Kirim OTP terlebih dahulu.')),
       );
       return;
     }
-    
+
     if (otpController.text == simulatedOtp && otpController.text.isNotEmpty) {
-      // Navigasi ke HomeScreen jika OTP benar
-      Navigator.pushReplacement(
-        context,
-        _createRoute(HomeScreen()), // Menggunakan Custom Transition
-      );
+      final prefs = await SharedPreferences.getInstance();
+
+      // misalnya pakai nomor HP atau username sebagai ID user
+      String user = emailController.text.trim(); // atau usernameController.text
+
+      // simpan user login
+      await prefs.setString('current_user', user);
+
+      // Navigasi ke HomeScreen
+      Navigator.pushReplacement(context, _createRoute(HomeScreen()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Kode OTP salah atau belum diisi.')),
       );
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,24 +102,24 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SizedBox(height: MediaQuery.of(context).size.height * 0.15), 
-            
+            SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+
             _buildLogoAndTitle(),
-            
+
             const SizedBox(height: 50),
-            
+
             _buildEmailSection(),
-            
-            const SizedBox(height: 20), 
+
+            const SizedBox(height: 20),
 
             _buildOtpSection(),
-            
+
             const SizedBox(height: 50),
-            
+
             _buildLoginButton(),
 
             const SizedBox(height: 30),
-            
+
             _buildFooterText(),
           ],
         ),
@@ -129,19 +133,16 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       children: [
         // --- Memanggil Logo ---
-        Image.asset(
-          'assets/images/logo_cakdurasim.png', 
-          height: 150, 
-        ),
+        Image.asset('assets/images/logo_cakdurasim.png', height: 150),
+
         // ------------------------------------
-        
         const SizedBox(height: 30),
         const Text(
           'Login Sekarang!',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: kBlackColor, 
-            fontSize: 24, 
+            color: kBlackColor,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -149,15 +150,11 @@ class _LoginScreenState extends State<LoginScreen> {
         const Text(
           'Masuk untuk melakukan pemesanan tiket',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.grey, 
-            fontSize: 14,
-          ),
+          style: TextStyle(color: Colors.grey, fontSize: 14),
         ),
       ],
     );
   }
-
 
   Widget _buildEmailSection() {
     return Column(
@@ -176,15 +173,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     hintText: 'Email',
-                    border: InputBorder.none, 
-                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 20,
+                    ),
                   ),
-                  enabled: !isOtpSent, 
+                  enabled: !isOtpSent,
                 ),
               ),
               // Tombol Kirim OTP
               TextButton(
-                onPressed: isOtpSent ? null : _sendOtp, 
+                onPressed: isOtpSent ? null : _sendOtp,
                 child: Text(
                   'Kirim OTP',
                   style: TextStyle(
@@ -209,23 +209,23 @@ class _LoginScreenState extends State<LoginScreen> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: kPrimaryColor, 
-              width: 2
-            ),
+            border: Border.all(color: kPrimaryColor, width: 2),
           ),
           child: TextField(
             controller: otpController,
             keyboardType: TextInputType.number,
-            textAlign: TextAlign.center, 
-            maxLength: 6, 
+            textAlign: TextAlign.center,
+            maxLength: 6,
             decoration: const InputDecoration(
               hintText: 'Masukkan OTP',
-              counterText: "", 
+              counterText: "",
               border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 20,
+              ),
             ),
-            enabled: isOtpSent, 
+            enabled: isOtpSent,
           ),
         ),
       ],
@@ -236,16 +236,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return ElevatedButton(
       onPressed: _login,
       style: ElevatedButton.styleFrom(
-        backgroundColor: kPrimaryColor, 
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        backgroundColor: kPrimaryColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         padding: const EdgeInsets.symmetric(vertical: 15),
       ),
       child: const Text(
         'LOGIN',
         style: TextStyle(
-          color: kCardColor, 
+          color: kCardColor,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
@@ -270,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: const Text(
                 'DAFTAR',
                 style: TextStyle(
-                  color: kPrimaryColor, 
+                  color: kPrimaryColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),

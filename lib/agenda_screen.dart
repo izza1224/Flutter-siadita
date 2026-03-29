@@ -1,27 +1,13 @@
 import 'package:flutter/material.dart';
 // --- TAMBAHAN IMPORT DETAIL ---
-import 'detail_agenda_screen.dart'; 
+import 'detail_agenda_screen.dart';
+import 'agenda_data.dart';
 
 // --- KONSTANTA WARNA ---
 const Color kPrimaryColor = Color(0xFF5E0821);
 const Color kPrimaryColor70 = Color(0xB35E0821); // Transparansi 70%
 const Color kCardColor = Color(0xFFFFFFFF);
 const Color kBlackColor = Color(0xFF000000);
-
-// --- MODEL DATA AGENDA ---
-class Agenda {
-  final String category;
-  final String title;
-  final String imagePath;
-  final String year;
-
-  Agenda({
-    required this.category,
-    required this.title,
-    required this.imagePath,
-    required this.year,
-  });
-}
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -34,19 +20,6 @@ class _AgendaScreenState extends State<AgendaScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedYear = 'Semua Tahun';
-
-  // --- DATA DUMMY SESUAI PERMINTAAN ---
-  final List<Agenda> allAgendas = [
-    // Tahun 2023
-    Agenda(category: 'Ludruk', title: '“Sucining Katresnan”', imagePath: 'assets/images/agenda_sucining.png', year: '2023'),
-    Agenda(category: 'Ludruk', title: '“Kepaten Obor”', imagePath: 'assets/images/agenda_kepaten.png', year: '2023'),
-    // Tahun 2024
-    Agenda(category: 'Ludruk', title: '“Nada Klinting”', imagePath: 'assets/images/agenda_nada.png', year: '2024'),
-    Agenda(category: 'Ludruk', title: '“Sarap Tambak Oso”', imagePath: 'assets/images/agenda_sarap.png', year: '2024'),
-    // Tahun 2022
-    Agenda(category: 'Ludruk', title: '“Nglaras Ikhlas Noto Lelaku”', imagePath: 'assets/images/agenda_nglaras.png', year: '2022'),
-    Agenda(category: 'Ludruk', title: '“Lemah Abang”', imagePath: 'assets/images/agenda_lemah.png', year: '2022'),
-  ];
 
   @override
   void initState() {
@@ -65,9 +38,11 @@ class _AgendaScreenState extends State<AgendaScreen> {
   // --- LOGIKA FILTER & SEARCH ---
   List<Agenda> _getFilteredAgendas() {
     return allAgendas.where((agenda) {
-      final matchesYear = _selectedYear == 'Semua Tahun' || agenda.year == _selectedYear;
-      final matchesSearch = agenda.title.toLowerCase().contains(_searchQuery) || 
-                            agenda.category.toLowerCase().contains(_searchQuery);
+      final matchesYear =
+          _selectedYear == 'Semua Tahun' || agenda.year == _selectedYear;
+      final matchesSearch =
+          agenda.title.toLowerCase().contains(_searchQuery) ||
+          agenda.category.toLowerCase().contains(_searchQuery);
       return matchesYear && matchesSearch;
     }).toList();
   }
@@ -82,7 +57,10 @@ class _AgendaScreenState extends State<AgendaScreen> {
             _buildHeader(context),
             Container(
               color: kCardColor,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 20.0,
+              ),
               child: Column(
                 children: [
                   _buildFilterAndSearch(),
@@ -113,7 +91,9 @@ class _AgendaScreenState extends State<AgendaScreen> {
           ),
         ),
         Positioned(
-          bottom: 0, left: 0, right: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -122,11 +102,19 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Agenda Taman Budaya', 
-                      style: TextStyle(color: kCardColor, fontSize: 32, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Agenda Taman Budaya',
+                      style: TextStyle(
+                        color: kCardColor,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    const Text('Pagelaran yang telah dilaksanakan ditaman\nbudaya',
-                      style: TextStyle(color: kCardColor, fontSize: 16)),
+                    const Text(
+                      'Pagelaran yang telah dilaksanakan ditaman\nbudaya',
+                      style: TextStyle(color: kCardColor, fontSize: 16),
+                    ),
                   ],
                 ),
               ),
@@ -134,7 +122,10 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 height: 30,
                 decoration: const BoxDecoration(
                   color: kCardColor,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
                 ),
               ),
             ],
@@ -169,8 +160,16 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 value: _selectedYear,
                 isExpanded: true,
                 icon: const Icon(Icons.arrow_drop_down, color: kPrimaryColor),
-                items: ['Semua Tahun', '2024', '2023', '2022'].map((String value) {
-                  return DropdownMenuItem<String>(value: value, child: Text(value, style: const TextStyle(color: kPrimaryColor)));
+                items: ['Semua Tahun', '2024', '2023', '2022'].map((
+                  String value,
+                ) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(color: kPrimaryColor),
+                    ),
+                  );
                 }).toList(),
                 onChanged: (val) => setState(() => _selectedYear = val!),
               ),
@@ -205,7 +204,10 @@ class _AgendaScreenState extends State<AgendaScreen> {
     if (filteredData.isEmpty) {
       return const Padding(
         padding: EdgeInsets.only(top: 50),
-        child: Text("Agenda tidak ditemukan", style: TextStyle(color: Colors.grey)),
+        child: Text(
+          "Agenda tidak ditemukan",
+          style: TextStyle(color: Colors.grey),
+        ),
       );
     }
     return GridView.builder(
@@ -224,27 +226,38 @@ class _AgendaScreenState extends State<AgendaScreen> {
         return InkWell(
           onTap: () {
             // Berpindah ke detail hanya jika item adalah Kepaten Obor
-            if (item.title.contains("Kepaten Obor")) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DetailAgendaScreen(),
-                ),
-              );
-            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailAgendaScreen(agendaId: item.id),
+              ),
+            );
           },
           child: Column(
             children: [
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: Image.asset(item.imagePath, fit: BoxFit.cover, 
-                    errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey[200], child: const Icon(Icons.image, color: Colors.grey))),
+                  child: Image.asset(
+                    item.imagePath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.image, color: Colors.grey),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
               Text(item.category, style: const TextStyle(fontSize: 14)),
-              Text(item.title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              Text(
+                item.title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
         );
@@ -257,8 +270,14 @@ class _AgendaScreenState extends State<AgendaScreen> {
       padding: const EdgeInsets.symmetric(vertical: 30),
       child: Column(
         children: const [
-          Text('UPT Taman Budaya Jatim', style: TextStyle(color: Colors.grey, fontSize: 14)),
-          Text('Ver 0.1 Beta', style: TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(
+            'UPT Taman Budaya Jatim',
+            style: TextStyle(color: Colors.grey, fontSize: 14),
+          ),
+          Text(
+            'Ver 0.1 Beta',
+            style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
         ],
       ),
     );
