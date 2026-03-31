@@ -31,6 +31,7 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 3800),
     );
 
+    // SCALE
     scaleAnim = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(begin: 0.7, end: 1.15)
@@ -49,40 +50,62 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
+    // BOUNCE
     bounceAnim = TweenSequence<double>([
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: -140, end: 0)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 60,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0, end: -30)
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0, end: -160)
             .chain(CurveTween(curve: Curves.easeOut)),
         weight: 20,
       ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: -30, end: 0)
+      TweenSequenceItem(
+        tween: Tween<double>(begin: -160, end: 40)
             .chain(CurveTween(curve: Curves.easeIn)),
-        weight: 20,
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 40, end: -60)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 15,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: -60, end: 20)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 15,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 20, end: -20)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 10,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: -20, end: 0)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 15,
       ),
     ]).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.2, 0.65),
+        curve: const Interval(0.0, 0.65),
       ),
     );
 
-    moveLeftAnim = Tween<double>(begin: 0, end: -70).animate(
+    // ✅ FIX: geser lebih lama & lebih smooth + posisi lebih tengah
+    moveLeftAnim = Tween<double>(begin: 0, end: -25).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.65, 0.85, curve: Curves.easeInOutCubic),
+        curve: const Interval(
+          0.6,
+          0.9,
+          curve: Curves.easeInOut,
+        ),
       ),
     );
 
+    // TEXT
     textFadeAnim = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.8, 1.0, curve: Curves.easeIn),
+        curve: const Interval(0.82, 1.0, curve: Curves.easeIn),
       ),
     );
 
@@ -92,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.8, 1.0, curve: Curves.easeOutCubic),
+        curve: const Interval(0.82, 1.0, curve: Curves.easeOut),
       ),
     );
 
@@ -101,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateNext() async {
-    await Future.delayed(const Duration(seconds: 4));
+    await Future.delayed(const Duration(seconds: 7));
 
     final prefs = await SharedPreferences.getInstance();
     String? user = prefs.getString('current_user');
@@ -135,9 +158,13 @@ class _SplashScreenState extends State<SplashScreen>
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
+
+            // ✅ FIX: hentikan bounce sebelum geser kiri mulai
+            double yOffset =
+                _controller.value < 0.6 ? bounceAnim.value : 0;
+
             return Transform.translate(
-              // 🔥 FIX: geser SATU ROW, bukan cuma logo
-              offset: Offset(moveLeftAnim.value, bounceAnim.value),
+              offset: Offset(moveLeftAnim.value, yOffset),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -150,37 +177,38 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
 
-                  const SizedBox(width: 12),
+                  SizedBox(width: textFadeAnim.value > 0 ? 12 : 0),
 
                   // TEXT
-                  FadeTransition(
-                    opacity: textFadeAnim,
-                    child: SlideTransition(
-                      position: textSlideAnim,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text(
-                            "SiAdita",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
+                  if (textFadeAnim.value > 0)
+                    FadeTransition(
+                      opacity: textFadeAnim,
+                      child: SlideTransition(
+                        position: textSlideAnim,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              "SiAdita",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            "Aplikasi Cak Durasim",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
+                            SizedBox(height: 4),
+                            Text(
+                              "Aplikasi Cak Durasim",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             );
