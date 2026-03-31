@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
+import 'splash_screen.dart'; // 1. TAMBAHKAN IMPORT INI
 
 void main() {
   runApp(const MyApp());
@@ -12,17 +13,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Aplikasi SiAdita',
-      // Menghilangkan banner DEBUG di pojok kanan atas
       debugShowCheckedModeBanner: false, 
-      
-      // Mengatur tema dasar aplikasi, menggunakan warna dasar Merah Gelap (5E0821)
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5E0821)),
         useMaterial3: true,
       ),
       
-      // Mengatur LoginScreen sebagai halaman awal yang akan dimuat
-      home: const LoginScreen(),
+      // 2. GANTI INI: Dari LoginScreen() ke SplashScreen()
+      home: const SplashScreen(), 
     );
   }
 }
