@@ -28,7 +28,9 @@ class _FavoritScreenState extends State<FavoritScreen> {
 
     if (user != null) {
       List<String> data = prefs.getStringList('favorite_$user') ?? [];
-      print("DATA DIAMBIL: $data"); // debug
+      print("USER LOAD: $user");
+      print("KEY LOAD: favorite_$user");
+      print("DATA DIAMBIL: $data");
 
       setState(() {
         favoritIds = data;

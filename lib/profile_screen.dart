@@ -1,11 +1,47 @@
 import 'package:flutter/material.dart';
-import 'favorit_screen.dart'; // Import halaman favorit
+import 'package:shared_preferences/shared_preferences.dart';
+import 'favorit_screen.dart';
+import 'login_screen.dart'; // ⬅️ tambahkan ini
 
-const Color kPrimaryColor = Color(0xFF7A0C2E); 
+const Color kPrimaryColor = Color(0xFF7A0C2E);
 const Color kCardColor = Colors.white;
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String userEmail = "";
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? user = prefs.getString('current_user');
+
+    setState(() {
+      userEmail = user ?? "Tidak diketahui";
+    });
+  }
+
+  Future<void> logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.remove('current_user'); // ⬅️ hapus user login
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false, // ⬅️ hapus semua stack
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,34 +88,32 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            const Text(
-              "Polines@gmail.com",
-              style: TextStyle(color: Colors.white, fontSize: 14),
+            // 🔥 EMAIL DINAMIS
+            Text(
+              userEmail,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
 
             const SizedBox(height: 25),
 
-            // CARD MENU 1
             _buildMenuCard([
-              _menuItem(context, Icons.person, "Edit Profile"), // Tambahkan context
+              _menuItem(context, Icons.person, "Edit Profile"),
               _divider(),
-              _menuItem(context, Icons.confirmation_number, "Favorit"), // Tambahkan context
+              _menuItem(context, Icons.confirmation_number, "Favorit"),
               _divider(),
-              _menuItem(context, Icons.chat_bubble_outline, "Kritik dan Saran"), // Tambahkan context
+              _menuItem(context, Icons.chat_bubble_outline, "Kritik dan Saran"),
             ]),
 
             const SizedBox(height: 15),
 
-            // CARD MENU 2
             _buildMenuCard([
-              _menuItem(context, Icons.headset_mic, "Pusat Bantuan"), // Tambahkan context
+              _menuItem(context, Icons.headset_mic, "Pusat Bantuan"),
             ]),
 
             const SizedBox(height: 15),
 
-            // LOGOUT
             _buildMenuCard([
-              _menuItem(context, Icons.logout, "Logout", isLogout: true), // Tambahkan context
+              _menuItem(context, Icons.logout, "Logout", isLogout: true),
             ]),
           ],
         ),
@@ -87,7 +121,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // CARD CONTAINER
   Widget _buildMenuCard(List<Widget> children) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -99,12 +132,14 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // MENU ITEM (Kata 'static' dihapus agar bisa menggunakan context)
-  Widget _menuItem(BuildContext context, IconData icon, String title,
-      {bool isLogout = false}) {
+  Widget _menuItem(
+    BuildContext context,
+    IconData icon,
+    String title, {
+    bool isLogout = false,
+  }) {
     return ListTile(
-      leading: Icon(icon,
-          color: isLogout ? Colors.red : kPrimaryColor),
+      leading: Icon(icon, color: isLogout ? Colors.red : kPrimaryColor),
       title: Text(
         title,
         style: TextStyle(
@@ -112,23 +147,23 @@ class ProfileScreen extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: Icon(Icons.arrow_forward_ios,
-          size: 16,
-          color: isLogout ? Colors.red : Colors.black),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: isLogout ? Colors.red : Colors.black,
+      ),
       onTap: () {
-        // PERBAIKAN: Hanya pindah halaman jika judulnya adalah "Favorit"
         if (title == "Favorit") {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const FavoritScreen())
+            MaterialPageRoute(builder: (context) => const FavoritScreen()),
           );
         } else if (isLogout) {
-           // Tambahkan logika logout jika perlu
+          logout(context); // 🔥 LOGOUT DIPANGGIL
         }
       },
     );
   }
 
-  // DIVIDER
   Widget _divider() {
     return const Divider(height: 1, thickness: 0.5);
   }

@@ -88,7 +88,8 @@ class DetailAgendaScreen extends StatelessWidget {
                     await prefs.setStringList(key, favList);
                   }
 
-                  print("TERSIMPAN: $favList"); // debug
+                  print("USER SIMPAN: $user");
+                  print("KEY SIMPAN: favorite_$user");
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Ditambahkan ke Favorit')),
